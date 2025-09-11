@@ -6,9 +6,9 @@ export default function TradePanel() {
   return (
     <section className="card p-4 sm:p-5 w-full max-w-md mx-auto">
       <div className="mt-4">
-        <TokenAmount token="ETH" />
+        <TokenAmount token="ETH" cardText="Pay with" />
 
-        <div className="flex justify-center -my-2">
+        <div className="flex justify-center -my-3">
           <button className="button rounded-full border border-border bg-surface size-8 grid place-items-center z-10">
             <Image
               src="/toggle-arrow.svg"
@@ -20,7 +20,7 @@ export default function TradePanel() {
           </button>
         </div>
 
-        <TokenAmount token="USDT" />
+        <TokenAmount token="USDT" cardText="Receive in" />
 
         <div className="mt-3 flex items-center justify-between text-xs">
           <div className="text-success">1 ETH = 1861.7 USDT</div>
