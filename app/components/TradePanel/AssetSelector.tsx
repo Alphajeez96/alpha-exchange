@@ -1,36 +1,42 @@
 "use client";
 import Image from "next/image";
 import {useMemo, useState} from "react";
+import {Token} from "@/app/lib/hyperliquid/types";
 import {motion, AnimatePresence} from "motion/react";
 import {useTokenImage} from "@/app/hooks/useTokenImage";
-
-type Token = {symbol: string; name: string};
-
-const SAMPLE_TOKENS: Token[] = [
-  {symbol: "ETH", name: "Ethereum"},
-  {symbol: "USDT", name: "Tether"},
-  {symbol: "USDC", name: "USD Coin"},
-  {symbol: "BTC", name: "Bitcoin"},
-  {symbol: "ARB", name: "Arbitrum"},
-];
+import {useAllMids, useMeta} from "@/app/hooks/useMarketData";
 
 interface AssetSelectorProps {
   open: boolean;
+  excluded?: string;
   onClose: () => void;
   onSelect: (symbol: string) => void;
 }
-
-const AssetSelector = ({open, onClose, onSelect}: AssetSelectorProps) => {
+const AssetSelector = ({
+  open,
+  onClose,
+  onSelect,
+  excluded,
+}: AssetSelectorProps) => {
+  const {data: meta} = useMeta();
+  const {data: mids} = useAllMids();
   const [query, setQuery] = useState("");
+
+  const coinOptions = useMemo(() => {
+    return (meta?.universe ?? [])
+      .map((token) => ({
+        ...token,
+        name: token?.name ?? "",
+        price: mids?.[token?.name] ?? 0,
+      }))
+      .filter((token) => !token.isDelisted && token.name !== excluded);
+  }, [mids, meta?.universe, excluded]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return SAMPLE_TOKENS;
-    return SAMPLE_TOKENS.filter(
-      (t) =>
-        t.symbol.toLowerCase().includes(q) || t.name.toLowerCase().includes(q)
-    );
-  }, [query]);
+    if (!q) return coinOptions;
+    return coinOptions.filter((token) => token.name.toLowerCase().includes(q));
+  }, [query, coinOptions]);
 
   return (
     <AnimatePresence mode="wait">
@@ -54,10 +60,10 @@ const AssetSelector = ({open, onClose, onSelect}: AssetSelectorProps) => {
           <div className="mt-2 max-h-60 overflow-auto divide-y divide-border/60">
             {filtered.map((token) => (
               <TokenRow
-                key={token.symbol}
+                key={token.name}
                 token={token}
                 onClick={() => {
-                  onSelect(token.symbol);
+                  onSelect(token.name);
                   onClose();
                 }}
               />
@@ -73,7 +79,7 @@ const AssetSelector = ({open, onClose, onSelect}: AssetSelectorProps) => {
 };
 
 const TokenRow = ({token, onClick}: {token: Token; onClick: () => void}) => {
-  const {src, handleError} = useTokenImage(token.symbol, 16);
+  const {src, handleError} = useTokenImage(token.name, 16);
   return (
     <button
       onClick={onClick}
@@ -83,11 +89,11 @@ const TokenRow = ({token, onClick}: {token: Token; onClick: () => void}) => {
         src={src}
         width={16}
         height={16}
-        alt={token.symbol}
+        alt={token.name}
         onError={handleError}
       />
-      <span className="font-medium">{token.symbol}</span>
-      <span className="text-muted">{token.name}</span>
+      <span className="font-medium">{token.name}</span>
+      <span className="text-muted">${token.price}</span>
     </button>
   );
 };

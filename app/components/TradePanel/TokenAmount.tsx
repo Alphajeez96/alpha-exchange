@@ -1,4 +1,6 @@
 "use client";
+
+import {clsx} from "clsx";
 import Image from "next/image";
 import AssetSelector from "./AssetSelector";
 import {useEffect, useRef, useState} from "react";
@@ -8,13 +10,17 @@ interface TokenAmountProps {
   token: string;
   cardText: string;
   disabled?: boolean;
+  excluded?: string;
   placeholder?: string;
+  onTokenChange: (name: string) => void;
 }
 
 const TokenAmount = ({
   token,
   cardText,
   disabled,
+  excluded,
+  onTokenChange,
   placeholder = "0",
 }: TokenAmountProps) => {
   const [open, setOpen] = useState(false);
@@ -46,6 +52,11 @@ const TokenAmount = ({
     document.addEventListener("keydown", onKeyDown, {signal});
     return () => controller.abort();
   }, [open]);
+
+  const handleSelection = (name: string) => {
+    onTokenChange(name);
+    setOpen(false);
+  };
 
   return (
     <div className="relative rounded-lg border border-border bg-surface-muted p-4 space-y-3">
@@ -87,15 +98,16 @@ const TokenAmount = ({
               alt="Open"
               width={14}
               height={14}
-              className="caret-down"
+              className={clsx("caret-down", open && "is-open")}
             />
           </button>
 
           <div className="absolute right-0 top-full z-20">
             <AssetSelector
               open={open}
+              excluded={excluded}
               onClose={() => setOpen(false)}
-              onSelect={() => setOpen(false)}
+              onSelect={(name) => handleSelection(name)}
             />
           </div>
         </div>

@@ -52,11 +52,10 @@ body {
 }
 
 .caret-down {
-  transition: transform 0.3s ease-in-out;
-}
-
-.caret-down.rotate-180 {
-  transform: rotate(180deg);
+  @apply duration-300 transition-transform ease-in-out-quad;
+  &.is-open {
+    transform: rotateX(180deg);
+  }
 }
 
 @utility card {
@@ -64,7 +63,7 @@ body {
 }
 
 @utility button {
-  @apply duration-250 cursor-pointer active:scale-95 transition-[transform,opacity] hover:opacity-85 focus-visible:outline-none;
+  @apply duration-250 ease-in-out-cubic cursor-pointer active:scale-95 transition-[transform,opacity] hover:opacity-85 focus-visible:outline-none;
 }
 
 @utility number-input {
