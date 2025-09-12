@@ -14,6 +14,8 @@ interface TokenAmountProps {
   excluded?: string;
   disabled?: boolean;
   placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
   onTokenChange: (name: string) => void;
 }
 
@@ -24,12 +26,20 @@ const TokenAmount = ({
   excluded,
   onTokenChange,
   placeholder = "0",
+  value: externalValue,
+  onChange,
 }: TokenAmountProps) => {
   const {data: mids} = useAllMids();
   const [open, setOpen] = useState(false);
   const {src, handleError} = useTokenImage(token);
   const containerRef = useRef<HTMLDivElement>(null);
-  const {value, handleChange, handleKeyDown} = useAmountInput();
+  const {value: internalValue, handleChange, handleKeyDown} = useAmountInput();
+  const value = externalValue ?? internalValue;
+
+  const handleInputChange = (newValue: string) => {
+    if (!externalValue) handleChange(newValue);
+    onChange?.(newValue);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -78,7 +88,7 @@ const TokenAmount = ({
           className="number-input"
           placeholder={placeholder}
           onKeyDown={handleKeyDown}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
         />
 
         <div ref={containerRef} className="relative">

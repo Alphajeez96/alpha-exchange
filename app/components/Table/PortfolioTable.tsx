@@ -4,6 +4,7 @@ import {useMemo} from "react";
 import {useAllMids} from "@/app/hooks/useMarketData";
 import {DataTable, type TableColumn} from "./index";
 import {usePortfolioStore} from "@/app/store/portfolioStore";
+import {formatCryptoAmount, formatAssetPrice} from "@/app/lib/formatCurrency";
 
 export default function PortfolioTable() {
   const holdings = usePortfolioStore((s) => s.holdings);
@@ -22,9 +23,9 @@ export default function PortfolioTable() {
       const value = qty * mark;
       return {
         asset: symbol,
-        qty: Number(qty).toFixed(6),
-        mark: mark ? Number(mark).toFixed(2) : "-",
-        value: Number(value).toFixed(2),
+        qty: formatCryptoAmount(qty),
+        mark: mark ? formatAssetPrice(mark) : "-",
+        value: formatAssetPrice(value),
       };
     });
   }, [holdings, mids]);
@@ -41,7 +42,7 @@ export default function PortfolioTable() {
       <td className="px-3 py-2 font-medium">Total</td>
       <td className="px-3 py-2"></td>
       <td className="px-3 py-2"></td>
-      <td className="px-3 py-2 font-medium">{Number(totalUsd).toFixed(2)}</td>
+      <td className="px-3 py-2 font-medium">{formatAssetPrice(totalUsd)}</td>
     </tr>
   );
 

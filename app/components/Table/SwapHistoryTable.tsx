@@ -1,7 +1,8 @@
 "use client";
 
-import {usePortfolioStore} from "@/app/store/portfolioStore";
 import {DataTable, type TableColumn} from "./index";
+import {usePortfolioStore} from "@/app/store/portfolioStore";
+import {formatCryptoAmount} from "@/app/lib/formatCurrency";
 
 export default function SwapHistoryTable() {
   const history = usePortfolioStore((s) => s.history);
@@ -18,8 +19,8 @@ export default function SwapHistoryTable() {
     time: new Date(trade.time).toLocaleString(),
     from: trade.fromSymbol,
     to: trade.toSymbol,
-    fromAmt: trade.fromAmount.toFixed(6),
-    toAmt: trade.toAmount.toFixed(6),
+    fromAmt: formatCryptoAmount(trade.fromAmount),
+    toAmt: formatCryptoAmount(trade.toAmount),
   }));
 
   return <DataTable columns={columns} rows={rows} emptyText="No swaps" />;

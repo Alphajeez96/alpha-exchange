@@ -5,17 +5,35 @@ import {useState, useMemo} from "react";
 import TokenAmount from "./TokenAmount";
 import MoreInformation from "./MoreInformation";
 import {useAllMids} from "@/app/hooks/useMarketData";
+import {usePortfolioStore} from "@/app/store/portfolioStore";
+import {formatCryptoAmount} from "@/app/lib/formatCurrency";
 
 export default function TradePanel() {
   const {data: mids} = useAllMids();
+  const recordSwap = usePortfolioStore((state) => state.recordSwap);
+  const setHolding = usePortfolioStore((state) => state.setHolding);
 
   const [tokenState, setTokenState] = useState({
     payToken: "ETH",
     receiveToken: "BTC",
   });
 
+  const [payAmount, setPayAmount] = useState("");
+  const [receiveAmount, setReceiveAmount] = useState("");
+
   const handleTokenChange = (key: string, name: string) => {
     setTokenState((ts) => ({...ts, [key]: name}));
+    setPayAmount("");
+    setReceiveAmount("");
+  };
+
+  const handleSwapTokens = () => {
+    setTokenState((ts) => ({
+      payToken: ts.receiveToken,
+      receiveToken: ts.payToken,
+    }));
+    setPayAmount(receiveAmount);
+    setReceiveAmount(payAmount);
   };
 
   const rateText = useMemo(() => {
@@ -29,6 +47,36 @@ export default function TradePanel() {
     return `${rate.toFixed(decimals)} ${tokenState.receiveToken}`;
   }, [mids, tokenState.payToken, tokenState.receiveToken]);
 
+  useMemo(() => {
+    const payPrice = mids?.[tokenState.payToken];
+    const receivePrice = mids?.[tokenState.receiveToken];
+
+    if (!payAmount || !payPrice || !receivePrice) return setReceiveAmount("");
+
+    const calculatedReceive = (parseFloat(payAmount) * payPrice) / receivePrice;
+    setReceiveAmount(formatCryptoAmount(calculatedReceive));
+  }, [payAmount, mids, tokenState.payToken, tokenState.receiveToken]);
+
+  const canSwap =
+    payAmount &&
+    parseFloat(payAmount) > 0 &&
+    receiveAmount &&
+    parseFloat(receiveAmount) > 0;
+
+  const handleSwap = () => {
+    if (!canSwap) return;
+
+    recordSwap({
+      fromSymbol: tokenState.payToken,
+      toSymbol: tokenState.receiveToken,
+      fromAmount: parseFloat(payAmount),
+      toAmount: parseFloat(receiveAmount),
+    });
+
+    setPayAmount("");
+    setReceiveAmount("");
+  };
+
   return (
     <section className="card p-4 sm:p-5 w-full max-w-md mx-auto">
       <div className="mt-4">
@@ -36,11 +84,17 @@ export default function TradePanel() {
           cardText="Pay with"
           token={tokenState.payToken}
           excluded={tokenState.receiveToken}
+          value={payAmount}
+          onChange={setPayAmount}
           onTokenChange={(name) => handleTokenChange("payToken", name)}
         />
 
         <div className="flex justify-center -my-3">
-          <button className="button rounded-full border border-border bg-surface size-8 grid place-items-center z-10">
+          <button
+            className="button rounded-full border border-border bg-surface size-8 grid place-items-center z-10"
+            onClick={handleSwapTokens}
+            aria-label="Swap tokens"
+          >
             <Image
               src="/toggle-arrow.svg"
               width={20}
@@ -56,6 +110,7 @@ export default function TradePanel() {
           cardText="Receive in"
           token={tokenState.receiveToken}
           excluded={tokenState.payToken}
+          value={receiveAmount}
           onTokenChange={(name) => handleTokenChange("receiveToken", name)}
         />
 
@@ -72,10 +127,11 @@ export default function TradePanel() {
         </div>
 
         <button
-          disabled={true}
-          className="button mt-4 w-full text-sm rounded-lg bg-success text-background h-10 font-semibold"
+          disabled={!canSwap}
+          onClick={handleSwap}
+          className="button mt-4 w-full text-sm rounded-lg bg-success text-background h-10 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span> Enter an amount to swap </span>
+          <span>{canSwap ? "Swap" : "Enter an amount to swap"}</span>
         </button>
 
         <MoreInformation />
