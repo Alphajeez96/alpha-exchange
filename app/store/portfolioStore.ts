@@ -27,6 +27,7 @@ type PortfolioActions = {
     toAmount: number;
   }) => void;
   setHolding: (symbol: string, quantity: number) => void;
+  addHolding: (symbol: string, quantity: number) => void;
   reset: () => void;
 };
 
@@ -50,11 +51,15 @@ export const usePortfolioStore = create<PortfolioStore>()(
       recordSwap: ({fromSymbol, toSymbol, fromAmount, toAmount}) =>
         set((state) => {
           if (fromAmount <= 0 || toAmount <= 0) return state;
+
           const holdings = {...state.holdings};
-          holdings[fromSymbol] = Math.max(
-            0,
-            (holdings[fromSymbol] ?? 0) - fromAmount
-          );
+          const newFromAmount = (holdings[fromSymbol] ?? 0) - fromAmount;
+          if (newFromAmount <= 0) {
+            delete holdings[fromSymbol];
+          } else {
+            holdings[fromSymbol] = newFromAmount;
+          }
+
           holdings[toSymbol] = (holdings[toSymbol] ?? 0) + toAmount;
 
           const record: SwapRecord = {
@@ -71,6 +76,15 @@ export const usePortfolioStore = create<PortfolioStore>()(
 
       setHolding: (symbol, quantity) => {
         set((state) => ({holdings: {...state.holdings, [symbol]: quantity}}));
+      },
+
+      addHolding: (symbol, quantity) => {
+        set((state) => ({
+          holdings: {
+            ...state.holdings,
+            [symbol]: (state.holdings[symbol] ?? 0) + quantity,
+          },
+        }));
       },
 
       reset: () => set({holdings: {}, history: []}),

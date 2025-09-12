@@ -11,7 +11,6 @@ import {formatCryptoAmount} from "@/app/lib/formatCurrency";
 export default function TradePanel() {
   const {data: mids} = useAllMids();
   const recordSwap = usePortfolioStore((state) => state.recordSwap);
-  const setHolding = usePortfolioStore((state) => state.setHolding);
 
   const [tokenState, setTokenState] = useState({
     payToken: "ETH",
