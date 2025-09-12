@@ -7,6 +7,7 @@ import {useAllMids} from "@/app/hooks/useMarketData";
 import {useTokenImage} from "@/app/hooks/useTokenImage";
 import {useAmountInput} from "@/app/hooks/useAmountInput";
 import {formatAssetPrice} from "@/app/lib/formatCurrency";
+
 interface TokenAmountProps {
   token: string;
   cardText: string;
@@ -35,6 +36,7 @@ const TokenAmount = ({
 
     const controller = new AbortController();
     const {signal} = controller;
+
     const onPointerDown = (e: Event) => {
       const target = e.target as Node | null;
       if (
@@ -50,8 +52,8 @@ const TokenAmount = ({
       if (e.key === "Escape") setOpen(false);
     };
 
-    document.addEventListener("pointerdown", onPointerDown, {signal});
     document.addEventListener("keydown", onKeyDown, {signal});
+    document.addEventListener("pointerdown", onPointerDown, {signal});
     return () => controller.abort();
   }, [open]);
 
