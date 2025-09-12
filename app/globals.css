@@ -66,3 +66,8 @@ body {
 @utility button {
   @apply duration-250 cursor-pointer active:scale-95 transition-[transform,opacity] hover:opacity-85 focus-visible:outline-none;
 }
+
+@utility number-input {
+  @apply bg-transparent text-2xl outline-none w-full max-w-3/5 placeholder:text-muted;
+  @apply autofill:bg-transparent autofill:shadow-[inset_0_0_0px_1000px_transparent] autofill:[-webkit-text-fill-color:inherit];
+}

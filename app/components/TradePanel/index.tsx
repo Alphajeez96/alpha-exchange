@@ -20,7 +20,7 @@ export default function TradePanel() {
           </button>
         </div>
 
-        <TokenAmount token="USDT" cardText="Receive in" />
+        <TokenAmount token="USDT" cardText="Receive in" disabled />
 
         <div className="mt-3 flex items-center justify-between text-xs">
           <div className="text-success">1 ETH = 1861.7 USDT</div>

@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
+import AssetSelector from "./AssetSelector";
 import {useEffect, useRef, useState} from "react";
 import {useTokenImage} from "@/app/hooks/useTokenImage";
-import AssetSelector from "./AssetSelector";
-
+import {useAmountInput} from "@/app/hooks/useAmountInput";
 interface TokenAmountProps {
   token: string;
   cardText: string;
@@ -20,6 +20,7 @@ const TokenAmount = ({
   const [open, setOpen] = useState(false);
   const {src, handleError} = useTokenImage(token);
   const containerRef = useRef<HTMLDivElement>(null);
+  const {value, handleChange, handleKeyDown} = useAmountInput();
 
   useEffect(() => {
     if (!open) return;
@@ -51,13 +52,20 @@ const TokenAmount = ({
       <label htmlFor={token} className="text-sm text-muted pb-1.5">
         {cardText}
       </label>
+
       <div className="flex items-center justify-between relative">
         <input
           id={token}
+          type="text"
+          value={value}
+          inputMode="decimal"
           disabled={disabled}
-          className="bg-transparent text-2xl outline-none w-full max-w-3/5 placeholder:text-muted"
+          className="number-input"
           placeholder={placeholder}
+          onKeyDown={handleKeyDown}
+          onChange={(e) => handleChange(e.target.value)}
         />
+
         <div ref={containerRef} className="relative">
           <button
             className="button ml-3 inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-2 text-sm relative"
@@ -82,6 +90,7 @@ const TokenAmount = ({
               className="caret-down"
             />
           </button>
+
           <div className="absolute right-0 top-full z-20">
             <AssetSelector
               open={open}
@@ -91,6 +100,7 @@ const TokenAmount = ({
           </div>
         </div>
       </div>
+
       <div className="text-xs text-muted">~$0</div>
     </div>
   );
