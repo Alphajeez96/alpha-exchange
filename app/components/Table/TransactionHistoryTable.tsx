@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import {useMemo} from "react";
 import {DataTable, type TableColumn} from "./index";
 import {usePortfolioStore} from "@/app/store/portfolioStore";
 import {formatCryptoAmount} from "@/app/lib/formatCurrency";
@@ -39,7 +40,7 @@ const formatAge = (timestamp: number) => {
   return `${seconds}s ago`;
 };
 
-export default function SwapHistoryTable() {
+export default function TransactionHistoryTable() {
   const history = usePortfolioStore((s) => s.history);
 
   const columns: TableColumn[] = [
@@ -51,28 +52,43 @@ export default function SwapHistoryTable() {
     {key: "age", header: "Age", className: "text-right"},
   ];
 
-  const rows = history.map((trade) => ({
-    hash: (
-      <span className="text-blue-500 font-mono text-sm">
-        {formatHash(trade.id)}
-      </span>
-    ),
-    from: (
-      <div className="flex items-center gap-2">
-        <TokenImage symbol={trade.fromSymbol} />
-        <span className="font-medium">{trade.fromSymbol}</span>
-      </div>
-    ),
-    to: (
-      <div className="flex items-center gap-2">
-        <TokenImage symbol={trade.toSymbol} />
-        <span className="font-medium">{trade.toSymbol}</span>
-      </div>
-    ),
-    fromAmt: formatCryptoAmount(trade.fromAmount),
-    toAmt: formatCryptoAmount(trade.toAmount),
-    age: formatAge(trade.time),
-  }));
+  const rows = useMemo(
+    () =>
+      history.map((trade) => ({
+        hash: (
+          <span className="text-blue-500 font-mono text-sm">
+            {formatHash(trade.id)}
+          </span>
+        ),
+        from: (
+          <div className="flex items-center gap-2">
+            <TokenImage symbol={trade.fromSymbol} />
+            <span className="font-medium">{trade.fromSymbol}</span>
+          </div>
+        ),
+        to: (
+          <div className="flex items-center gap-2">
+            <TokenImage symbol={trade.toSymbol} />
+            <span className="font-medium">{trade.toSymbol}</span>
+          </div>
+        ),
+        fromAmt: formatCryptoAmount(trade.fromAmount),
+        toAmt: formatCryptoAmount(trade.toAmount),
+        age: formatAge(trade.time),
+        _searchId: trade.id,
+        _searchFrom: trade.fromSymbol,
+        _searchTo: trade.toSymbol,
+      })),
+    [history]
+  );
 
-  return <DataTable columns={columns} rows={rows} emptyText="No swaps" />;
+  return (
+    <DataTable
+      title="Transaction History"
+      columns={columns}
+      rows={rows}
+      searchFields={["_searchId", "_searchFrom", "_searchTo"]}
+      emptyText="No transactions found"
+    />
+  );
 }
