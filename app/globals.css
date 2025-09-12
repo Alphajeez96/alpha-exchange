@@ -74,3 +74,13 @@ body {
   @apply bg-transparent text-2xl outline-none w-full max-w-3/5 placeholder:text-muted;
   @apply autofill:bg-transparent autofill:shadow-[inset_0_0_0px_1000px_transparent] autofill:[-webkit-text-fill-color:inherit];
 }
+
+.number-input:-webkit-autofill,
+.number-input:-webkit-autofill:hover,
+.number-input:-webkit-autofill:focus,
+.number-input:-webkit-autofill:active {
+  -webkit-box-shadow: inset 0 0 0px 1000px transparent !important;
+  -webkit-text-fill-color: inherit !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}

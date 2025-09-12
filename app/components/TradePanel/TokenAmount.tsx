@@ -1,16 +1,17 @@
 "use client";
-
 import {clsx} from "clsx";
 import Image from "next/image";
 import AssetSelector from "./AssetSelector";
 import {useEffect, useRef, useState} from "react";
+import {useAllMids} from "@/app/hooks/useMarketData";
 import {useTokenImage} from "@/app/hooks/useTokenImage";
 import {useAmountInput} from "@/app/hooks/useAmountInput";
+import {formatAssetPrice} from "@/app/lib/formatCurrency";
 interface TokenAmountProps {
   token: string;
   cardText: string;
-  disabled?: boolean;
   excluded?: string;
+  disabled?: boolean;
   placeholder?: string;
   onTokenChange: (name: string) => void;
 }
@@ -23,6 +24,7 @@ const TokenAmount = ({
   onTokenChange,
   placeholder = "0",
 }: TokenAmountProps) => {
+  const {data: mids} = useAllMids();
   const [open, setOpen] = useState(false);
   const {src, handleError} = useTokenImage(token);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -114,7 +116,9 @@ const TokenAmount = ({
       </div>
 
       {value && parseFloat(value) > 0 && (
-        <div className="text-xs text-muted">~$0</div>
+        <div className="text-xs text-muted">
+          ≈{formatAssetPrice(parseFloat(value) * (mids?.[token] ?? 0))}
+        </div>
       )}
     </div>
   );
