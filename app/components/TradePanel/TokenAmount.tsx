@@ -101,7 +101,9 @@ const TokenAmount = ({
         </div>
       </div>
 
-      <div className="text-xs text-muted">~$0</div>
+      {value && parseFloat(value) > 0 && (
+        <div className="text-xs text-muted">~$0</div>
+      )}
     </div>
   );
 };
