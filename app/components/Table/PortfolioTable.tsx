@@ -1,10 +1,26 @@
 "use client";
 
 import {useMemo} from "react";
+import Image from "next/image";
 import {useAllMids} from "@/app/hooks/useMarketData";
 import {DataTable, type TableColumn} from "./index";
 import {usePortfolioStore} from "@/app/store/portfolioStore";
 import {formatCryptoAmount, formatAssetPrice} from "@/app/lib/formatCurrency";
+import {useTokenImage} from "@/app/hooks/useTokenImage";
+
+const TokenImage = ({symbol}: {symbol: string}) => {
+  const {src, handleError} = useTokenImage(symbol, 20);
+  return (
+    <Image
+      src={src}
+      alt={symbol}
+      width={20}
+      height={20}
+      onError={handleError}
+      className="rounded-full"
+    />
+  );
+};
 
 export default function PortfolioTable() {
   const holdings = usePortfolioStore((s) => s.holdings);
@@ -22,7 +38,12 @@ export default function PortfolioTable() {
       const mark = mids?.[symbol] ?? 0;
       const value = qty * mark;
       return {
-        asset: symbol,
+        asset: (
+          <div className="flex items-center gap-2">
+            <TokenImage symbol={symbol} />
+            <span className="font-medium">{symbol}</span>
+          </div>
+        ),
         qty: formatCryptoAmount(qty),
         mark: mark ? formatAssetPrice(mark) : "-",
         value: formatAssetPrice(value),
