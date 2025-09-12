@@ -6,22 +6,21 @@ type FallbackOptions = {
 
 const cache = new Map<string, string>();
 
-function getCacheKey(
+const getCacheKey = (
   text: string,
   {size, backgroundColor, textColor}: FallbackOptions
-): string {
+): string => {
   return `${text}|${size}|${backgroundColor}|${textColor}`;
-}
+};
 
-export function createFallbackImg(
+export const createFallbackImg = (
   text: string,
   options: FallbackOptions = {
     size: 20,
-    // textColor: "#25262c",
     textColor: "#0f0f0f",
     backgroundColor: "#D7F4FF",
   }
-): string {
+): string => {
   if (typeof window === "undefined" || typeof document === "undefined")
     return "";
 
@@ -64,4 +63,4 @@ export function createFallbackImg(
   const dataUrl = canvas.toDataURL("image/png", 1.0);
   cache.set(key, dataUrl);
   return dataUrl;
-}
+};
