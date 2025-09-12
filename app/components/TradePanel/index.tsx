@@ -8,7 +8,16 @@ import {useAllMids} from "@/app/hooks/useMarketData";
 import {usePortfolioStore} from "@/app/store/portfolioStore";
 import {formatCryptoAmount} from "@/app/lib/formatCurrency";
 
-export default function TradePanel() {
+enum TOKEN_KEY {
+  PAY_TOKEN = "payToken",
+  RECEIVE_TOKEN = "receiveToken",
+}
+
+export default function TradePanel({
+  onTokenChange,
+}: {
+  onTokenChange?: (token: string) => void;
+}) {
   const {data: mids} = useAllMids();
   const recordSwap = usePortfolioStore((state) => state.recordSwap);
 
@@ -24,6 +33,8 @@ export default function TradePanel() {
     setTokenState((ts) => ({...ts, [key]: name}));
     setPayAmount("");
     setReceiveAmount("");
+
+    if (key === TOKEN_KEY.PAY_TOKEN) onTokenChange?.(name);
   };
 
   const handleSwapTokens = () => {
@@ -31,6 +42,8 @@ export default function TradePanel() {
       payToken: ts.receiveToken,
       receiveToken: ts.payToken,
     }));
+
+    onTokenChange?.(tokenState.receiveToken);
     setPayAmount(receiveAmount);
     setReceiveAmount(payAmount);
   };
@@ -85,7 +98,7 @@ export default function TradePanel() {
           excluded={tokenState.receiveToken}
           value={payAmount}
           onChange={setPayAmount}
-          onTokenChange={(name) => handleTokenChange("payToken", name)}
+          onTokenChange={(name) => handleTokenChange(TOKEN_KEY.PAY_TOKEN, name)}
         />
 
         <div className="flex justify-center -my-3">
@@ -110,7 +123,9 @@ export default function TradePanel() {
           token={tokenState.receiveToken}
           excluded={tokenState.payToken}
           value={receiveAmount}
-          onTokenChange={(name) => handleTokenChange("receiveToken", name)}
+          onTokenChange={(name) =>
+            handleTokenChange(TOKEN_KEY.RECEIVE_TOKEN, name)
+          }
         />
 
         <div className="mt-3 flex items-center justify-between text-xs">

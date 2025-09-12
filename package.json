@@ -11,6 +11,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.87.4",
     "class-variance-authority": "^0.7.1",
+    "lightweight-charts": "^5.0.8",
     "motion": "^12.23.12",
     "next": "15.5.3",
     "react": "19.1.0",

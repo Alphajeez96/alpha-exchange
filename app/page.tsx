@@ -1,10 +1,13 @@
-// import Image from "next/image";
-import {ComponentType} from "react";
+"use client";
+
+import {ComponentType, useState} from "react";
 import TradePanel from "./components/TradePanel";
+import PriceChart from "./components/PriceChart";
 import PortfolioTable from "./components/Table/PortfolioTable";
 import TransactionHistoryTable from "./components/Table/TransactionHistoryTable";
 
 export default function Home() {
+  const [payToken, setPayToken] = useState("ETH");
   const tables: {title: string; component: ComponentType}[] = [
     {title: "Portfolio", component: PortfolioTable},
     {title: "Transaction History", component: TransactionHistoryTable},
@@ -16,9 +19,9 @@ export default function Home() {
           <h1 className="text-xl font-semibold">Alpha Exchange</h1>
         </header>
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <TradePanel />
+          <TradePanel onTokenChange={setPayToken} />
           <div className="lg:col-span-2 rounded-lg border border-border bg-surface p-4">
-            {/* <PriceChart /> */}
+            <PriceChart baseSymbol={payToken} />
           </div>
         </section>
 
@@ -28,7 +31,7 @@ export default function Home() {
               key={title}
               className="rounded-lg border border-border bg-surface p-3"
             >
-              <div className="max-h-80 overflow-y-auto">
+              <div className="max-h-136 overflow-y-auto">
                 <Component />
               </div>
             </div>

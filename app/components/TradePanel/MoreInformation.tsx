@@ -5,17 +5,17 @@ const MoreInformation = () => {
       <div className="space-y-1 text-xs">
         <div className="flex justify-between">
           <span>Minimum Received</span>
-          <span>1,852 USDT</span>
+          <span>-</span>
         </div>
 
         <div className="flex justify-between">
           <span>Gas Fee</span>
-          <span>$16.34</span>
+          <span>-</span>
         </div>
 
         <div className="flex justify-between ease-">
           <span>Price Impact</span>
-          <span>&lt; 0.01%</span>
+          <span>-</span>
         </div>
       </div>
     </div>
