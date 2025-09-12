@@ -5,6 +5,7 @@ import {Token} from "@/app/lib/hyperliquid/types";
 import {motion, AnimatePresence} from "motion/react";
 import {useTokenImage} from "@/app/hooks/useTokenImage";
 import {useAllMids, useMeta} from "@/app/hooks/useMarketData";
+import {formatAssetPrice} from "@/app/lib/formatCurrency";
 
 interface AssetSelectorProps {
   open: boolean;
@@ -93,7 +94,7 @@ const TokenRow = ({token, onClick}: {token: Token; onClick: () => void}) => {
         onError={handleError}
       />
       <span className="font-medium">{token.name}</span>
-      <span className="text-muted">${token.price}</span>
+      <span className="text-muted">{formatAssetPrice(token.price)}</span>
     </button>
   );
 };

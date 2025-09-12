@@ -1,11 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import {useState} from "react";
+import {useState, useMemo} from "react";
 import TokenAmount from "./TokenAmount";
 import MoreInformation from "./MoreInformation";
+import {useAllMids} from "@/app/hooks/useMarketData";
 
 export default function TradePanel() {
+  const {data: mids} = useAllMids();
+
   const [tokenState, setTokenState] = useState({
     payToken: "ETH",
     receiveToken: "BTC",
@@ -14,6 +17,17 @@ export default function TradePanel() {
   const handleTokenChange = (key: string, name: string) => {
     setTokenState((ts) => ({...ts, [key]: name}));
   };
+
+  const rateText = useMemo(() => {
+    const base = mids?.[tokenState.payToken];
+    const quote = mids?.[tokenState.receiveToken];
+
+    if (!base || !quote) return "";
+
+    const rate = base / quote;
+    const decimals = rate >= 1 ? 4 : 6;
+    return `${rate.toFixed(decimals)} ${tokenState.receiveToken}`;
+  }, [mids, tokenState.payToken, tokenState.receiveToken]);
 
   return (
     <section className="card p-4 sm:p-5 w-full max-w-md mx-auto">
@@ -46,27 +60,25 @@ export default function TradePanel() {
         />
 
         <div className="mt-3 flex items-center justify-between text-xs">
-          <div className="text-success">1 ETH = 1861.7 USDT</div>
+          {rateText && (
+            <div className="text-success">
+              1 {tokenState.payToken} = {rateText}
+            </div>
+          )}
           <div className="flex items-center gap-3 text-muted">
             <span className="i-heroicons-arrow-path-20-solid" />
             <span className="i-heroicons-bell-alert-20-solid" />
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-          <button className="rounded-md bg-success/15 text-success border border-success/30 py-2 font-medium">
-            Maximum Return
-          </button>
-          <button className="rounded-md bg-surface border border-border py-2 text-muted">
-            Lowest Gas
-          </button>
-        </div>
+        <button
+          disabled={true}
+          className="button mt-4 w-full text-sm rounded-lg bg-success text-background h-10 font-semibold"
+        >
+          <span> Enter an amount to swap </span>
+        </button>
 
         <MoreInformation />
-
-        <button className="mt-4 w-full rounded-md bg-success text-black py-2 font-medium">
-          CONNECT WALLET
-        </button>
       </div>
     </section>
   );
