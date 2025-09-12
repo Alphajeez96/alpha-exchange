@@ -87,6 +87,7 @@ export default function TransactionHistoryTable() {
       title="Transaction History"
       columns={columns}
       rows={rows}
+      placeholder="Search by hash or token name..."
       searchFields={["_searchId", "_searchFrom", "_searchTo"]}
       emptyText="No transactions found"
     />

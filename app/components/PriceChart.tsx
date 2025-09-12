@@ -1,7 +1,5 @@
 "use client";
-
 import {useEffect, useId, useState} from "react";
-
 declare global {
   interface Window {
     TradingView?: {

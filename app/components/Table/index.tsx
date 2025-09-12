@@ -13,7 +13,9 @@ export const DataTable = ({
   searchable = true,
   searchFields = [],
   title,
+  placeholder,
 }: {
+  placeholder?: string;
   columns: TableColumn[];
   rows: Array<Record<string, ReactNode>>;
   footer?: ReactNode;
@@ -42,7 +44,7 @@ export const DataTable = ({
         <h3 className="text-sm font-medium">{title}</h3>
         <input
           type="text"
-          placeholder={`Search ${title.toLowerCase()}...`}
+          placeholder={placeholder ?? `Search ${title.toLowerCase()}...`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-64 rounded-md bg-surface-muted border border-border px-3 py-2 text-sm outline-none focus:border-primary"
