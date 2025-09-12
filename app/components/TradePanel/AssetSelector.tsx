@@ -1,11 +1,12 @@
 "use client";
+
 import Image from "next/image";
 import {useMemo, useState} from "react";
 import {Token} from "@/app/lib/hyperliquid/types";
 import {motion, AnimatePresence} from "motion/react";
 import {useTokenImage} from "@/app/hooks/useTokenImage";
-import {useAllMids, useMeta} from "@/app/hooks/useMarketData";
 import {formatAssetPrice} from "@/app/lib/formatCurrency";
+import {useAllMids, useMeta} from "@/app/hooks/useMarketData";
 
 interface AssetSelectorProps {
   open: boolean;
@@ -84,7 +85,7 @@ const TokenRow = ({token, onClick}: {token: Token; onClick: () => void}) => {
   return (
     <button
       onClick={onClick}
-      className="button w-full flex items-center gap-2 p-2 text-sm bg-transparent hover:opacity-75 active:scale-100"
+      className="button w-full flex items-center gap-2 p-2 text-sm bg-transparent hover:opacity-75"
     >
       <Image
         src={src}
