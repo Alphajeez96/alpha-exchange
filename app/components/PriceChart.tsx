@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useId} from "react";
+import {useEffect, useId, useState} from "react";
 
 declare global {
   interface Window {
@@ -30,12 +30,14 @@ type PriceChartProps = {
 const PriceChart = ({baseSymbol}: PriceChartProps) => {
   const id = useId().replace(/:/g, "");
   const containerId = `tv_${id}`;
+  const [isLoading, setIsLoading] = useState(true);
 
   const symbol = `BINANCE:${(baseSymbol || "ETH").toUpperCase()}USDT`;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    setIsLoading(true);
     const loadScript = () =>
       new Promise<void>((resolve) => {
         if (window.TradingView) return resolve();
@@ -67,6 +69,10 @@ const PriceChart = ({baseSymbol}: PriceChartProps) => {
         allow_symbol_change: true,
         studies: [],
       });
+
+      setTimeout(() => {
+        if (active) setIsLoading(false);
+      }, 1000);
     });
 
     return () => {
@@ -75,8 +81,16 @@ const PriceChart = ({baseSymbol}: PriceChartProps) => {
   }, [symbol, containerId]);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full relative">
       <div id={containerId} className="w-full h-full" />
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-surface">
+          <div className="text-muted text-sm">
+            Loading
+            <span className="animate-pulse">...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

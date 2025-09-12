@@ -22,8 +22,8 @@ const TokenImage = ({symbol}: {symbol: string}) => {
 };
 
 const formatHash = (hash: string) => {
-  if (hash.length <= 10) return hash;
-  return `${hash.slice(0, 6)}****${hash.slice(-6)}`;
+  if (hash.length <= 16) return hash;
+  return `${hash.slice(0, 10)}****${hash.slice(-10)}`;
 };
 
 const formatAge = (timestamp: number) => {
