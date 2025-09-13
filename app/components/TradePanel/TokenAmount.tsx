@@ -1,8 +1,6 @@
 "use client";
 import {clsx} from "clsx";
 import Image from "next/image";
-import {motion} from "motion/react";
-import useMeasure from "react-use-measure";
 import AssetSelector from "./AssetSelector";
 import {useEffect, useRef, useState} from "react";
 import {useAllMids} from "@/app/hooks/useMarketData";
@@ -35,14 +33,24 @@ const TokenAmount = ({
   const [open, setOpen] = useState(false);
   const {src, handleError} = useTokenImage(token);
   const containerRef = useRef<HTMLDivElement>(null);
-  const {value: internalValue, handleChange, handleKeyDown} = useAmountInput();
-
-  const [ref, bounds] = useMeasure();
+  const {
+    normalize,
+    handleBlur,
+    handleChange,
+    handleKeyDown,
+    value: internalValue,
+  } = useAmountInput();
   const value = externalValue ?? internalValue;
 
   const handleInputChange = (newValue: string) => {
     if (!externalValue) handleChange(newValue);
     onChange?.(newValue);
+  };
+
+  const handleInputBlur = () => {
+    const next = normalize(value ?? "");
+    if (next !== value) handleInputChange(next);
+    handleBlur();
   };
 
   useEffect(() => {
@@ -77,72 +85,74 @@ const TokenAmount = ({
   };
 
   return (
-    <motion.div
-      className="relative rounded-lg border border-border bg-surface-muted p-4 space-y-3"
-      animate={{height: bounds.height + 40}}
-      transition={{duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94]}}
-    >
-      <div ref={ref}>
-        <label htmlFor={token} className="text-sm text-muted pb-1.5">
-          {cardText}
-        </label>
+    <div className="relative rounded-lg border border-border bg-surface-muted p-4 space-y-3">
+      <label htmlFor={token} className="text-sm text-muted pb-1.5">
+        {cardText}
+      </label>
 
-        <div className="flex items-center justify-between relative">
-          <input
-            id={token}
-            type="text"
-            value={value}
-            inputMode="decimal"
-            disabled={disabled}
-            className="number-input"
-            placeholder={placeholder}
-            onKeyDown={handleKeyDown}
-            onChange={(e) => handleInputChange(e.target.value)}
-          />
+      <div className="flex items-center justify-between relative">
+        <input
+          id={token}
+          type="text"
+          value={value}
+          inputMode="decimal"
+          disabled={disabled}
+          className="number-input"
+          placeholder={placeholder}
+          onKeyDown={handleKeyDown}
+          onBlur={handleInputBlur}
+          onChange={(e) => handleInputChange(e.target.value)}
+        />
 
-          <div ref={containerRef} className="relative">
-            <button
-              className="button ml-3 inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-2 text-sm relative"
-              onClick={() => setOpen((open) => !open)}
-              aria-haspopup="listbox"
-              aria-expanded={open}
-              aria-controls={`asset-selector-${token}`}
-            >
-              <Image
-                src={src}
-                alt={token}
-                width={20}
-                height={20}
-                onError={handleError}
-              />
-              <span>{token}</span>
-              <Image
-                src="/caret-down.svg"
-                alt="Open"
-                width={14}
-                height={14}
-                className={clsx("caret-down", open && "is-open")}
-              />
-            </button>
+        <div ref={containerRef} className="relative">
+          <button
+            className="button ml-3 inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-2 text-sm relative"
+            onClick={() => setOpen((open) => !open)}
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            aria-controls={`asset-selector-${token}`}
+          >
+            <Image
+              src={src}
+              alt={token}
+              width={20}
+              height={20}
+              onError={handleError}
+            />
+            <span>{token}</span>
+            <Image
+              src="/caret-down.svg"
+              alt="Open"
+              width={14}
+              height={14}
+              className={clsx("caret-down", open && "is-open")}
+            />
+          </button>
 
-            <div className="absolute right-0 top-full z-20">
-              <AssetSelector
-                open={open}
-                excluded={excluded}
-                onClose={() => setOpen(false)}
-                onSelect={(name) => handleSelection(name)}
-              />
-            </div>
+          <div className="absolute right-0 top-full z-20">
+            <AssetSelector
+              open={open}
+              excluded={excluded}
+              onClose={() => setOpen(false)}
+              onSelect={(name) => handleSelection(name)}
+            />
           </div>
         </div>
-
-        {value && parseFloat(value) > 0 && (
-          <div className="text-xs text-muted">
-            ≈{formatAssetPrice(parseFloat(value) * (mids?.[token] ?? 0))}
-          </div>
-        )}
       </div>
-    </motion.div>
+
+      <div className="text-xs text-muted h-3.5 relative overflow-hidden">
+        <span
+          className={clsx(
+            "block absolute transition-transform duration-300 ease-in-out translate-y-3",
+            value && parseFloat(value) > 0 && "!translate-y-0"
+          )}
+        >
+          {!value || parseFloat(value) === 0
+            ? "$0.00"
+            : `≈${formatAssetPrice(parseFloat(value) * (mids?.[token] ?? 0))}`}
+        </span>
+      </div>
+    </div>
   );
 };
 export default TokenAmount;

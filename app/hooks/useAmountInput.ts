@@ -115,6 +115,12 @@ export const useAmountInput = ({
       }
 
       if (char === "." && !value.includes(".")) return;
+
+      if (char === "0" && value === "0") {
+        e.preventDefault();
+        return;
+      }
+
       if (char < "0" || char > "9") e.preventDefault();
     },
     [value]
@@ -141,5 +147,6 @@ export const useAmountInput = ({
     handleKeyDown,
     handleBlur,
     setValue,
+    normalize: validateInput,
   };
 };
