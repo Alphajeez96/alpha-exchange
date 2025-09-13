@@ -44,12 +44,12 @@ export default function TransactionHistoryTable() {
   const history = usePortfolioStore((s) => s.history);
 
   const columns: TableColumn[] = [
-    {key: "hash", header: "Hash"},
-    {key: "from", header: "From"},
-    {key: "to", header: "To"},
-    {key: "fromAmt", header: "From Amt", className: "text-right"},
-    {key: "toAmt", header: "To Amt", className: "text-right"},
-    {key: "age", header: "Age", className: "text-right"},
+    {key: "hash", header: "Hash", className: "min-w-[140px]"},
+    {key: "from", header: "From", className: "min-w-[80px]"},
+    {key: "to", header: "To", className: "min-w-[80px]"},
+    {key: "fromAmt", header: "From Amt", className: "text-right min-w-[100px]"},
+    {key: "toAmt", header: "To Amt", className: "text-right min-w-[100px]"},
+    {key: "age", header: "Age", className: "text-right min-w-[80px]"},
   ];
 
   const rows = useMemo(

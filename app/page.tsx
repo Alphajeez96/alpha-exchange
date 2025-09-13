@@ -53,7 +53,7 @@ export default function Home() {
               key={title}
               className="rounded-lg border border-border bg-surface p-3"
             >
-              <div className="max-h-136 overflow-y-auto">
+              <div className="max-h-136 overflow-y-auto overflow-x-auto">
                 <Component />
               </div>
             </div>

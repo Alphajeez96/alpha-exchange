@@ -27,12 +27,16 @@ export default function PortfolioTable() {
   const {data: mids} = useAllMids();
 
   const columns: TableColumn[] = [
-    {key: "asset", header: "Asset"},
-    {key: "qty", header: "Qty", className: "text-right"},
-    {key: "mark", header: "Price", className: "text-right"},
-    {key: "value", header: "Value", className: "text-right"},
-    {key: "allocation", header: "% Allocation", className: "text-right"},
-    {key: "change24h", header: "24h", className: "text-right"},
+    {key: "asset", header: "Asset", className: "min-w-[80px]"},
+    {key: "qty", header: "Qty", className: "text-right min-w-[120px]"},
+    {key: "mark", header: "Price", className: "text-right min-w-[100px]"},
+    {key: "value", header: "Value", className: "text-right min-w-[120px]"},
+    {
+      key: "allocation",
+      header: "% Allocation",
+      className: "text-right min-w-[100px]",
+    },
+    {key: "change24h", header: "24h", className: "text-right min-w-[80px]"},
   ];
 
   const rows = useMemo(() => {

@@ -59,49 +59,53 @@ export const DataTable = ({
       {searchHeader && (
         <div className="p-3 border-b border-border">{searchHeader}</div>
       )}
-      <table className="min-w-full text-sm">
-        <thead className="bg-surface-muted">
-          <tr className="text-left border-0">
-            {columns.map((col) => (
-              <th
-                key={col.key}
-                className={clsx("px-3 py-2 font-medium", col.className)}
-              >
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {!filteredRows.length ? (
-            <tr>
-              <td
-                colSpan={columns.length}
-                className="px-3 py-2 text-center text-muted"
-              >
-                {emptyText}
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-sm">
+          <thead className="bg-surface-muted">
+            <tr className="text-left border-0">
+              {columns.map((col) => (
+                <th
+                  key={col.key}
+                  className={clsx("px-3 py-2 font-medium", col.className)}
+                >
+                  {col.header}
+                </th>
+              ))}
             </tr>
-          ) : (
-            filteredRows.map((row, i) => (
-              <tr key={i} className="border-t border-border text-left">
-                {columns.map((col) => (
-                  <td
-                    key={col.key}
-                    className={clsx("px-3 py-2", col?.className ?? "")}
-                  >
-                    {row[col.key]}
-                  </td>
-                ))}
+          </thead>
+
+          <tbody>
+            {!filteredRows.length ? (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="px-3 py-2 text-center text-muted"
+                >
+                  {emptyText}
+                </td>
               </tr>
-            ))
+            ) : (
+              filteredRows.map((row, i) => (
+                <tr key={i} className="border-t border-border text-left">
+                  {columns.map((col) => (
+                    <td
+                      key={col.key}
+                      className={clsx("px-3 py-2", col?.className ?? "")}
+                    >
+                      {row[col.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+          {footer && (
+            <tfoot className="border-t border-border bg-surface">
+              {footer}
+            </tfoot>
           )}
-        </tbody>
-        {footer && (
-          <tfoot className="border-t border-border bg-surface">{footer}</tfoot>
-        )}
-      </table>
+        </table>
+      </div>
     </div>
   );
 };
