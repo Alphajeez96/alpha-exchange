@@ -1,6 +1,8 @@
 "use client";
 import {clsx} from "clsx";
 import Image from "next/image";
+import {motion} from "motion/react";
+import useMeasure from "react-use-measure";
 import AssetSelector from "./AssetSelector";
 import {useEffect, useRef, useState} from "react";
 import {useAllMids} from "@/app/hooks/useMarketData";
@@ -34,6 +36,8 @@ const TokenAmount = ({
   const {src, handleError} = useTokenImage(token);
   const containerRef = useRef<HTMLDivElement>(null);
   const {value: internalValue, handleChange, handleKeyDown} = useAmountInput();
+
+  const [ref, bounds] = useMeasure();
   const value = externalValue ?? internalValue;
 
   const handleInputChange = (newValue: string) => {
@@ -73,66 +77,72 @@ const TokenAmount = ({
   };
 
   return (
-    <div className="relative rounded-lg border border-border bg-surface-muted p-4 space-y-3">
-      <label htmlFor={token} className="text-sm text-muted pb-1.5">
-        {cardText}
-      </label>
+    <motion.div
+      className="relative rounded-lg border border-border bg-surface-muted p-4 space-y-3"
+      animate={{height: bounds.height + 40}}
+      transition={{duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94]}}
+    >
+      <div ref={ref}>
+        <label htmlFor={token} className="text-sm text-muted pb-1.5">
+          {cardText}
+        </label>
 
-      <div className="flex items-center justify-between relative">
-        <input
-          id={token}
-          type="text"
-          value={value}
-          inputMode="decimal"
-          disabled={disabled}
-          className="number-input"
-          placeholder={placeholder}
-          onKeyDown={handleKeyDown}
-          onChange={(e) => handleInputChange(e.target.value)}
-        />
+        <div className="flex items-center justify-between relative">
+          <input
+            id={token}
+            type="text"
+            value={value}
+            inputMode="decimal"
+            disabled={disabled}
+            className="number-input"
+            placeholder={placeholder}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => handleInputChange(e.target.value)}
+          />
 
-        <div ref={containerRef} className="relative">
-          <button
-            className="button ml-3 inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-2 text-sm relative"
-            onClick={() => setOpen((open) => !open)}
-            aria-haspopup="listbox"
-            aria-expanded={open}
-            aria-controls={`asset-selector-${token}`}
-          >
-            <Image
-              src={src}
-              alt={token}
-              width={20}
-              height={20}
-              onError={handleError}
-            />
-            <span>{token}</span>
-            <Image
-              src="/caret-down.svg"
-              alt="Open"
-              width={14}
-              height={14}
-              className={clsx("caret-down", open && "is-open")}
-            />
-          </button>
+          <div ref={containerRef} className="relative">
+            <button
+              className="button ml-3 inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-2 text-sm relative"
+              onClick={() => setOpen((open) => !open)}
+              aria-haspopup="listbox"
+              aria-expanded={open}
+              aria-controls={`asset-selector-${token}`}
+            >
+              <Image
+                src={src}
+                alt={token}
+                width={20}
+                height={20}
+                onError={handleError}
+              />
+              <span>{token}</span>
+              <Image
+                src="/caret-down.svg"
+                alt="Open"
+                width={14}
+                height={14}
+                className={clsx("caret-down", open && "is-open")}
+              />
+            </button>
 
-          <div className="absolute right-0 top-full z-20">
-            <AssetSelector
-              open={open}
-              excluded={excluded}
-              onClose={() => setOpen(false)}
-              onSelect={(name) => handleSelection(name)}
-            />
+            <div className="absolute right-0 top-full z-20">
+              <AssetSelector
+                open={open}
+                excluded={excluded}
+                onClose={() => setOpen(false)}
+                onSelect={(name) => handleSelection(name)}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {value && parseFloat(value) > 0 && (
-        <div className="text-xs text-muted">
-          ≈{formatAssetPrice(parseFloat(value) * (mids?.[token] ?? 0))}
-        </div>
-      )}
-    </div>
+        {value && parseFloat(value) > 0 && (
+          <div className="text-xs text-muted">
+            ≈{formatAssetPrice(parseFloat(value) * (mids?.[token] ?? 0))}
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 export default TokenAmount;

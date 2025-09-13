@@ -25,6 +25,7 @@ export default function Home() {
         <header className="flex items-center justify-between">
           <h1 className="text-xl font-semibold">Alpha Exchange</h1>
         </header>
+
         <motion.section
           animate={variants.visible}
           initial={variants.hidden}
